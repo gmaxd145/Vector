@@ -4,8 +4,6 @@
 #include <cstddef>
 #include <utility>
 
-#include <iostream>
-
 //template <typename T>
 using T = double;
 class Vector
@@ -15,7 +13,6 @@ public:
 
     Vector(const T* rawArray, const size_t size, float coef = 2.0):
             _size(size), _multiplicativeCoef(coef) {
-
         if (size == 0)
         {
             _capacity = int(coef);
@@ -25,14 +22,12 @@ public:
             _capacity = int(float(_size) * _multiplicativeCoef);
         }
 
-        _capacity = int(float(_size) * _multiplicativeCoef);
-
-        _data = new T[_capacity];
-        for (size_t i = 0; i < _size; ++i)
-        {
-            _data[i] = rawArray[i];
-        }
-        // _data = copyWithAlloc(rawArray, _size, _capacity)
+//        _data = new T[_capacity];
+//        for (size_t i = 0; i < _size; ++i)
+//        {
+//            _data[i] = rawArray[i];
+//        }
+         _data = copyWithAlloc(rawArray, _size, _capacity);
     }
 
     Vector(const Vector& other):
@@ -61,7 +56,6 @@ public:
     Vector(Vector&& other) noexcept
     {
         *this = std::move(other);
-//        *this = other;
     }
 
     Vector& operator=(Vector&& other) noexcept
@@ -81,76 +75,49 @@ public:
 
     void pushBack(const T& value)
     {
-//        ++_size;
-//        if (_capacity <= _size)
-//        {
-//            _capacity *= _multiplicativeCoef;
-//            T* newData = new T[_capacity];
-//            for (int i = 0; i < _size - 1; ++i)
-//            {
-//                newData[i] = std::move(_data[i]);
-//            }
-////            T* newData = copyWithAlloc(_data, _size, _capacity);
-//            delete[] _data;
-//            _data = newData;
-//        }
-//        _data[_size - 1] = std::move(value);
         insert(value, _size);
     }
 
     void pushFront(const T& value)
     {
-//        ++_size;
-//        if (_capacity <= _size)
-//        {
-//            _capacity *= _multiplicativeCoef;
-//            T* newData = new T[_capacity];
-//            for (int i = _size - 2; i >= 0; --i)
-//            {
-//                newData[i + 1] = std::move(_data[i]);
-//            }
-//            delete[] _data;
-//            _data = newData;
-//        }
-//        else {
-//            for (int i = _size - 2; i >= 0; --i) {
-//                _data[i + 1] = std::move(_data[i]);
-//            }
-//        }
-//        _data[0] = std::move(value);
         insert(value, 0);
     }
 
     void insert(const T& value, size_t pos)
     {
-        if (!(pos <= _size))
-        {
-            return;
-        }
-        ++_size;
-        if (_capacity <= _size)
-        {
-            if (_capacity == 0) {
-                _capacity = 1;
-            }
-            _capacity *= _multiplicativeCoef;
-//        T* newData = new T[_capacity];
-//        for (int i = _size - 2; i >= pos && i != -1; --i) {
-//            newData[i + 1] = std::move(_data[i]);
+//        if (!(pos <= _size))
+//        {
+//            return;
 //        }
-//        for (int i = 0; i < pos; ++i) {
-//            newData[i] = std::move(_data[i]);
+//        ++_size;
+//        if (_capacity <= _size)
+//        {
+//            if (_capacity == 0)
+//            {
+//                _capacity = 1;
+//            }
+//            _capacity *= _multiplicativeCoef;
+//
+////        T* newData = new T[_capacity];
+////        for (int i = _size - 2; i >= pos && i != -1; --i) {
+////            newData[i + 1] = std::move(_data[i]);
+////        }
+////        for (int i = 0; i < pos; ++i) {
+////            newData[i] = std::move(_data[i]);
+////        }
+////        delete[] _data;
+////        _data = newData;
+//            insertReAllocCopyToPos(_size - 2, pos, 1);
 //        }
-//        delete[] _data;
-//        _data = newData;
-            insertReAllocCopyToPos(_size - 2, pos, 1);
-        }
-        else {
-            for (int i = _size - 2; i >= pos && i != -1; --i) {
-                _data[i + 1] = std::move(_data[i]);
-            }
-        }
-        _data[pos] = std::move(value);
+//        else {
+//            for (int i = _size - 2; i >= pos && i != -1; --i) {
+//                _data[i + 1] = std::move(_data[i]);
+//            }
+//        }
+//        _data[pos] = std::move(value);
+
+        T arr[]{value};
+        insert(arr, 1, pos);
     }
 
     void insert(const T* values, size_t size, size_t pos)
@@ -188,56 +155,51 @@ public:
 
     void insert(const Vector& vector, size_t pos)
     {
-        if (pos <= _size)
-        {
-            int size = vector._size;
-            T* values = vector._data;
-            _size += size;
-            if (_capacity <= _size)
-            {
-                _capacity += size;
-                _capacity *= _multiplicativeCoef;
-//            T* newData = new T[_capacity];
-//            for (int i = _size - size - 1; i >= pos && i != -1; --i)
+//        if (pos <= _size)
+//        {
+//            int size = vector._size;
+//            T* values = vector._data;
+//            _size += size;
+//            if (_capacity <= _size)
 //            {
-//                newData[i + size] = std::move(_data[i]);
+//                _capacity += size;
+//                _capacity *= _multiplicativeCoef;
+////            T* newData = new T[_capacity];
+////            for (int i = _size - size - 1; i >= pos && i != -1; --i)
+////            {
+////                newData[i + size] = std::move(_data[i]);
+////            }
+////            for (int i = 0; i < pos; ++i)
+////            {
+////                newData[i] = std::move(_data[i]);
+////            }
+////            delete[] _data;
+////            _data = newData;
+//                insertReAllocCopyToPos(_size - size - 1, pos, size);
 //            }
-//            for (int i = 0; i < pos; ++i)
+//            else {
+//                for (int i = _size - size - 1; i >= pos && i != -1; --i)
+//                {
+//                    _data[i + size] = std::move(_data[i]);
+//                }
+//            }
+//            for (int i = pos; i < pos + size; ++i)
 //            {
-//                newData[i] = std::move(_data[i]);
+//                _data[i] = std::move(values[i - pos]);
 //            }
-//            delete[] _data;
-//            _data = newData;
-                insertReAllocCopyToPos(_size - size - 1, pos, size);
-            }
-            else {
-                for (int i = _size - size - 1; i >= pos && i != -1; --i)
-                {
-                    _data[i + size] = std::move(_data[i]);
-                }
-            }
-            for (int i = pos; i < pos + size; ++i)
-            {
-                _data[i] = std::move(values[i - pos]);
-            }
-        }
+//        }
+        insert(vector._data, vector._size, pos);
     }
 
     void popBack()
     {
-        if (_size == 0) {
-            throw std::out_of_range("Empty vector popBack");
-        }
-
+        isEmpty();
         --_size;
     }
 
     void popFront()
     {
-        if (_size == 0) {
-            throw std::out_of_range("Empty vector popFront");
-        }
-
+        isEmpty();
         --_size;
 
         T* newData = new T[_capacity];
@@ -246,6 +208,7 @@ public:
             newData[i] = _data[i + 1];
         }
 //        T* newData = copyWithAlloc(_data, _size, _capacity);
+
         delete[] _data;
         _data = newData;
     }
@@ -253,10 +216,7 @@ public:
 
     void erase(size_t pos, size_t count) {
 
-        if (_size == 0)
-        {
-            return;
-        }
+        isEmpty();
 
         size_t end = pos + count;
         if (end > _size)
@@ -297,10 +257,12 @@ public:
 
     void eraseBetween(size_t beginPos, size_t endPos)
     {
-        if (!(beginPos < _size && endPos <= _size) || beginPos >= endPos  || _size == 0)
+        if (!(beginPos < _size && endPos <= _size) || beginPos >= endPos)
         {
             return;
         }
+        isEmpty();
+
         int toErase = endPos - beginPos;
         for (int i = _size - 1; i >= endPos; --i)
         {
@@ -315,13 +277,25 @@ public:
         return _data[idx];
     }
 
-    const T& operator[](size_t idx) const { return _data[idx]; }
-    size_t size() const { return _size; }
-    size_t capacity() const
+    const T& operator[](size_t idx) const
+    {
+        return _data[idx];
+    }
+
+    [[nodiscard]] size_t size() const
+    {
+        return _size;
+    }
+
+    [[nodiscard]] size_t capacity() const
     {
         return _capacity;
     }
-    double loadFactor() const { return _multiplicativeCoef; }
+
+    [[nodiscard]] double loadFactor() const
+    {
+        return _multiplicativeCoef;
+    }
 
     long long find(const T& value) const
     {
@@ -430,25 +404,21 @@ public:
         return Iterator(&_data[_size]);
     }
 
-
-
-
-
 private:
     T* _data = nullptr;
     size_t _size = 0;
     size_t _capacity = 0;
     float _multiplicativeCoef = 2.0f;
 
-//    T* copyWithAlloc(const T*& source, size_t n, size_t capacity)
-//    {
-//        T* buf = new T[capacity];
-//        for (int i = 0; i < n; ++i)
-//        {
-//            buf[i] = std::move(source[i]);
-//        }
-//        return buf;
-//    }
+    T* copyWithAlloc(const T*& source, size_t n, size_t capacity)
+    {
+        T* buf = new T[capacity];
+        for (int i = 0; i < n; ++i)
+        {
+            buf[i] = std::move(source[i]);
+        }
+        return buf;
+    }
 
     void insertReAllocCopyToPos(int from, int pos, int shift)
     {
@@ -468,6 +438,11 @@ private:
     // T* copyData(const T*& source, const size_t n,
     //                const size_t capacity = _capacity);
 
+    void isEmpty() {
+        if (_size == 0) {
+            throw std::out_of_range("Empty vector popBack");
+        }
+    }
 };
 
 
