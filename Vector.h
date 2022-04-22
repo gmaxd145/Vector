@@ -167,7 +167,7 @@ Vector<Value>& Vector<Value>::operator=(const Vector<Value>& other) {
 }
 
 template <typename Value>
-Vector<Value>::Vector(Vector&& other) noexcept {
+Vector<Value>::Vector(Vector<Value>&& other) noexcept {
     *this = std::move(other);
 }
 
