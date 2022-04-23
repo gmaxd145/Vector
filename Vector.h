@@ -139,12 +139,7 @@ Vector<Value>::Vector(const Value* rawArray, const size_t size, float coef)
     if (coef < 1) {
         _multiplicativeCoef = 2.0f;
     }
-    if (size == 0) {
-        _capacity = static_cast<int>(coef);
-    }
-    else {
-        _capacity = static_cast<int>(static_cast<float>(_size) * _multiplicativeCoef);
-    }
+    _capacity = static_cast<int>(static_cast<float>(_size) * _multiplicativeCoef);
     _data = new Value[_capacity];
     for (size_t i = 0; i < _size; ++i) {
         _data[i] = std::move(rawArray[i]);
