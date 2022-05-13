@@ -8,7 +8,7 @@ Vector::Vector(const Value* rawArray, const size_t size, float coef)
     _capacity = static_cast<int>(static_cast<float>(_size) * _multiplicativeCoef);
     _data = new Value[_capacity];
     for (size_t i = 0; i < _size; ++i) {
-        _data[i] = std::move(rawArray[i]);
+        _data[i] = rawArray[i];
     }
 }
 
@@ -32,10 +32,17 @@ Vector::Vector(Vector&& other) noexcept {
 
 Vector& Vector::operator=(Vector&& other) noexcept
 {
+    if (this == &other) {
+        return *this;
+    }
     std::swap(_data, other._data);
     std::swap(_size, other._size);
     std::swap(_capacity, other._capacity);
     std::swap(_multiplicativeCoef, other._multiplicativeCoef);
+    other._data = nullptr;
+    other._size = 0;
+    other._capacity = 0;
+    other._multiplicativeCoef = 0;
     return *this;
 }
 
@@ -65,15 +72,15 @@ void Vector::insert(const Value* values, size_t size, size_t pos)
     if (_capacity <= _size) {
         _capacity += size;
         _capacity *= _multiplicativeCoef;
-        insertReAllocCopyToPos(_size - 2, pos, size);
+        insertReAllocCopyToPos(_size - size - 1, pos, size);
     }
     else {
-        for (int i = _size - 2; i >= pos && i != -1; --i) {
+        for (int i = _size - size - 1; i >= pos && i != -1; --i) {
             _data[i + size] = std::move(_data[i]);
         }
     }
     for (int i = pos; i < pos + size; ++i) {
-        _data[i] = std::move(values[i - pos]);
+        _data[i] = values[i - pos];
     }
 }
 
@@ -134,7 +141,7 @@ size_t Vector::capacity() const {
 }
 
 double Vector::loadFactor() const {
-    return _multiplicativeCoef;
+    return double(_size) / double(_capacity);
 }
 
 long long Vector::find(const Value& value) const {
