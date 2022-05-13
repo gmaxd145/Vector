@@ -1,3 +1,6 @@
+//TODO: fixes like in vector without templates
+
+
 #ifndef VECTOR_VECTOR_H
 #define VECTOR_VECTOR_H
 
